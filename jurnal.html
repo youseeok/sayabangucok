@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jurnal Receh | @sayabangucok</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;500&display=swap">
+<style>
+:root{--bg:#0a0a0a;--ink:#f4f1e8;--muted:#9a9a9a;--gold:#ffd98a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+header{text-align:center;padding:36px 20px 8px}
+.back{display:inline-block;color:var(--gold);text-decoration:none;font-size:14px;margin-bottom:18px}
+h1{margin:0;font-family:"Archivo Black",Impact,sans-serif;font-weight:400;font-size:clamp(30px,7vw,64px);text-transform:uppercase;line-height:1.05}
+header p{max-width:560px;margin:14px auto 0;color:#e6e2d6;font-size:clamp(13px,2vw,16px)}
+header small{display:block;margin-top:4px;color:var(--muted);font-size:clamp(12px,1.8vw,14px)}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px}
+.card{display:flex;flex-direction:column;background:#141414;border:1px solid #262626;border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .25s,box-shadow .25s}
+.card:hover,.card:focus-visible{transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,200,80,.18);outline:none}
+.th{aspect-ratio:16/10;background:#111;overflow:hidden}
+.th img,.ph{width:100%;height:100%;object-fit:cover;display:block}
+.ph{display:flex;align-items:center;justify-content:center;font-family:"Archivo Black",Impact,sans-serif;font-size:22px;color:rgba(255,217,138,.55);background:linear-gradient(135deg,#1b1538,#2b1d1a)}
+.body{padding:14px 16px 18px}
+time{display:block;color:var(--muted);font-size:12px}
+.body h3{margin:4px 0 6px;font-size:17px;font-weight:500;line-height:1.3}
+.body p{margin:0;color:#c9c5b8;font-size:13px}
+.sk .th,.sk .l{background:linear-gradient(90deg,#161616,#242424,#161616);background-size:200% 100%;animation:sh 1.4s linear infinite}
+.sk .l{height:12px;border-radius:6px;margin:10px 0 0}
+@keyframes sh{to{background-position:-200% 0}}
+.msg{text-align:center;color:var(--muted);font-size:14px;padding:30px 16px}
+.more{text-align:center;padding:12px 16px 44px}
+.more a{display:inline-block;padding:11px 22px;border-radius:999px;border:1px solid rgba(255,210,90,.55);background:rgba(255,210,90,.1);color:#ffe9a8;text-decoration:none;font-weight:500;font-size:15px;box-shadow:0 0 14px rgba(255,200,60,.18);transition:background .2s,color .2s}
+.more a:hover,.more a:focus-visible{background:var(--gold);color:#3a2a08;outline:none}
+@media(prefers-reduced-motion:reduce){.card,.sk .th,.sk .l{transition:none;animation:none}}
+</style>
+</head>
+<body>
+<header>
+<a class="back" href="index.html">← Beranda</a>
+<h1>Jurnal Receh</h1>
+<p>Serious Studies of Small Indonesian Things<small>*made by Me and Akal Imitation</small></p>
+</header>
+<main><div class="grid" id="grid"></div><div class="msg" id="msg" hidden></div></main>
+<div class="more"><a id="all" href="https://medium.com/@sayabangucok" target="_blank" rel="noopener">Lihat semua di Medium →</a></div>
+
+<script>
+/* ====== EDIT BAGIAN INI ====== */
+var MEDIUM_USER='@sayabangucok';   // akun Medium
+var MAX_POSTS=12;                   // jumlah tulisan maksimal yang ditampilkan
+/* ====== SELESAI ====== */
+
+(function(){
+var FEED='https://medium.com/feed/'+MEDIUM_USER,CK='jurnal:cache:'+MEDIUM_USER;
+var grid=document.getElementById('grid'),msg=document.getElementById('msg');
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function fmt(d){var x=new Date(d);return isNaN(x)?'':x.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
+function parseHtml(h){return new DOMParser().parseFromString(h||'','text/html')}
+function firstImg(h){
+  var imgs=parseHtml(h).querySelectorAll('img');
+  for(var i=0;i<imgs.length;i++){var s=imgs[i].getAttribute('src')||'';if(s&&s.indexOf('/_/stat')<0&&imgs[i].getAttribute('width')!=='1')return s}
+  return '';
+}
+function excerpt(h){
+  var ps=parseHtml(h).querySelectorAll('p');
+  for(var i=0;i<ps.length;i++){var t=(ps[i].textContent||'').replace(/\s+/g,' ').trim();if(t.length>40)return t.length>150?t.slice(0,147).replace(/\s+\S*$/,'')+'…':t}
+  return '';
+}
+function norm(a){return{title:a.title,link:a.link,date:a.date,img:a.img,ex:a.ex}}
+function viaRss2Json(){
+  return fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(FEED)).then(function(r){return r.json()}).then(function(d){
+    if(d.status!=='ok'||!d.items)throw 0;
+    return d.items.map(function(it){
+      var html=it.content||it.description||'';
+      return norm({title:it.title,link:it.link,date:String(it.pubDate||'').replace(' ','T')+'Z',img:it.thumbnail||firstImg(html),ex:excerpt(html)});
+    });
+  });
+}
+function viaProxy(){
+  return fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(FEED)).then(function(r){return r.text()}).then(function(x){
+    var doc=new DOMParser().parseFromString(x,'text/xml'),items=[].slice.call(doc.querySelectorAll('item'));
+    if(!items.length)throw 0;
+    return items.map(function(it){
+      var g=function(n){var e=it.getElementsByTagName(n)[0];return e?e.textContent:''},html=g('content:encoded')||g('description');
+      return norm({title:g('title'),link:g('link'),date:g('pubDate'),img:firstImg(html),ex:excerpt(html)});
+    });
+  });
+}
+function render(list){
+  grid.innerHTML='';msg.hidden=true;
+  list.slice(0,MAX_POSTS).forEach(function(p){
+    var a=el('a','card');a.href=p.link;a.target='_blank';a.rel='noopener noreferrer';
+    var th=el('div','th');
+    if(p.img){var im=el('img');im.src=p.img;im.alt='';im.loading='lazy';im.referrerPolicy='no-referrer';th.appendChild(im)}else th.appendChild(el('div','ph','Jurnal Receh'));
+    var b=el('div','body');
+    var d=fmt(p.date);if(d){var t=el('time',null,d);b.appendChild(t)}
+    b.appendChild(el('h3',null,p.title));
+    if(p.ex)b.appendChild(el('p',null,p.ex));
+    a.appendChild(th);a.appendChild(b);grid.appendChild(a);
+  });
+}
+function skeleton(){
+  grid.innerHTML='';
+  for(var i=0;i<6;i++){var c=el('div','card sk');c.appendChild(el('div','th'));var b=el('div','body');b.appendChild(el('div','l'));b.appendChild(el('div','l'));c.appendChild(b);grid.appendChild(c)}
+}
+var cached=null;
+try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
+if(cached&&cached.length)render(cached);else skeleton();
+viaRss2Json().catch(viaProxy).then(function(list){
+  if(!list||!list.length)throw 0;
+  render(list);
+  try{localStorage.setItem(CK,JSON.stringify(list.slice(0,MAX_POSTS)))}catch(e){}
+}).catch(function(){
+  if(!cached||!cached.length){grid.innerHTML='';msg.hidden=false;msg.textContent='Belum bisa memuat tulisan terbaru. Silakan buka langsung di Medium lewat tombol di bawah.'}
+});
+})();
+</script>
+</body>
+</html>
