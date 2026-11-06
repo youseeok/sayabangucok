@@ -49,13 +49,17 @@ button{font-family:inherit}
 .nv{top:50%;margin-top:-21px}.nv.p{left:8px}.nv.n{right:8px}
 @media(max-width:760px){.box{grid-template-columns:1fr}.pic,.pic img{max-height:56vh}.nv{top:28vh}}
 @media(prefers-reduced-motion:reduce){.card{transition:none}}
+header h2{margin:8px 0 0;font-family:"Archivo Black",Impact,sans-serif;font-weight:400;font-size:clamp(16px,3.2vw,24px);letter-spacing:.04em;color:var(--gold)}
+.top{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 auto 24px;max-width:520px}
+.top a{padding:8px 14px;border-radius:999px;border:1px solid rgba(255,210,90,.55);background:rgba(255,210,90,.1);color:#ffe9a8;text-decoration:none;font-weight:500;font-size:13px;white-space:nowrap;box-shadow:0 0 12px rgba(255,200,60,.15);transition:background .2s,color .2s,box-shadow .2s}
+.top a:hover,.top a:focus-visible,.top a[aria-current=page]{background:#ffd98a;color:#3a2a08;box-shadow:0 0 18px rgba(255,200,60,.5);outline:none}
 </style>
 </head>
 <body>
 <header>
-<a class="back" href="index.html">← Beranda</a>
+<nav class="top" aria-label="Halaman"><a href="index.html">Home</a><a href="index.html#portofolio">Portofolio</a><a href="galeri.html" aria-current="page">Beli Artwork</a><a href="jurnal.html">Jurnal Receh</a></nav>
 <h1>ARTWORK</h1>
-<h2>BANG UCOK & ANAKNYA</h2>
+<h2>BANG UCOK &amp; ANAKNYA</h2>
 <p>Pre Order Artprint 3-5 Hari Kerja</p>
 </header>
 <main><div class="grid" id="grid"></div></main>
@@ -90,6 +94,9 @@ var ART=[
   {img:'images/eyespiration.jpg',title:'Eyespiration',year:2024,medium:'Anti UV Printing, Linen 230 gsm',desc:'Artist: Bang Ucok.',bg:'linear-gradient(145deg,#1b1538,#3e5a8a 55%,#fffaf0)'}
 ];
 /* ====== SELESAI ====== */
+
+// Otomatis membuat id dari judul jika belum diisi (dipakai untuk alamat tiap karya)
+(function(){var used={};ART.forEach(function(a){var b=a.id||String(a.title||'karya').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'karya',id=b,n=2;while(used[id])id=b+'-'+n++;used[id]=1;a.id=id})})();
 
 (function(){
 var $=function(s){return document.querySelector(s)};

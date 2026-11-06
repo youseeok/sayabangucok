@@ -34,11 +34,14 @@ time{display:block;color:var(--muted);font-size:12px}
 .more a{display:inline-block;padding:11px 22px;border-radius:999px;border:1px solid rgba(255,210,90,.55);background:rgba(255,210,90,.1);color:#ffe9a8;text-decoration:none;font-weight:500;font-size:15px;box-shadow:0 0 14px rgba(255,200,60,.18);transition:background .2s,color .2s}
 .more a:hover,.more a:focus-visible{background:var(--gold);color:#3a2a08;outline:none}
 @media(prefers-reduced-motion:reduce){.card,.sk .th,.sk .l{transition:none;animation:none}}
+.top{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 auto 24px;max-width:520px}
+.top a{padding:8px 14px;border-radius:999px;border:1px solid rgba(255,210,90,.55);background:rgba(255,210,90,.1);color:#ffe9a8;text-decoration:none;font-weight:500;font-size:13px;white-space:nowrap;box-shadow:0 0 12px rgba(255,200,60,.15);transition:background .2s,color .2s,box-shadow .2s}
+.top a:hover,.top a:focus-visible,.top a[aria-current=page]{background:#ffd98a;color:#3a2a08;box-shadow:0 0 18px rgba(255,200,60,.5);outline:none}
 </style>
 </head>
 <body>
 <header>
-<a class="back" href="index.html">← Beranda</a>
+<nav class="top" aria-label="Halaman"><a href="index.html">Home</a><a href="index.html#portofolio">Portofolio</a><a href="galeri.html">Beli Artwork</a><a href="jurnal.html" aria-current="page">Jurnal Receh</a></nav>
 <h1>Jurnal Receh</h1>
 <p>Serious Studies of Small Indonesian Things<small>*made by Me and Akal Imitation</small></p>
 </header>
