@@ -294,7 +294,11 @@ async function draw(text){
   try{if(document.fonts&&document.fonts.load)await Promise.race([document.fonts.load('52px "Archivo Black"'),new Promise(function(r){setTimeout(r,1500)})])}catch(e){}
   var W=1080,H=1350,cx=W/2,cy=640,TAU=Math.PI*2,i;
   cv=document.createElement('canvas');cv.width=W;cv.height=H;var c=cv.getContext('2d');
-  var R=150+Math.min(text.length,40)*2.6;
+  var fs=text.length<=10?72:text.length<=20?58:text.length<=30?50:44,maxW=520,lh=fs*1.2,lines=[];
+  c.font=fs+'px "Archivo Black",Impact,sans-serif';
+  wrap(c,text,maxW).forEach(function(l){while(c.measureText(l).width>maxW&&l.length>1){var n=l.length;while(n>1&&c.measureText(l.slice(0,n)).width>maxW)n--;lines.push(l.slice(0,n));l=l.slice(n)}lines.push(l)});
+  var tw=0;lines.forEach(function(l){tw=Math.max(tw,c.measureText(l).width)});
+  var th=lines.length*lh,R=Math.min(400,Math.max(150,Math.sqrt(tw*tw/4+th*th/4)+56));
   function rnd(a,b){return a+Math.random()*(b-a)}
   c.fillStyle='#070605';c.fillRect(0,0,W,H);
   c.globalCompositeOperation='lighter';
@@ -326,10 +330,8 @@ async function draw(text){
   c.globalCompositeOperation='source-over';c.shadowBlur=0;
   var dg=c.createRadialGradient(cx,cy,0,cx,cy,R);dg.addColorStop(0,'#fffdf4');dg.addColorStop(.6,'#fff1c0');dg.addColorStop(1,'#ffd47a');
   c.fillStyle=dg;c.beginPath();c.arc(cx,cy,R,0,TAU);c.fill();
-  var fs=text.length<=10?64:text.length<=20?52:44,lines,maxW=R*1.45;
-  for(;;){c.font=fs+'px "Archivo Black",Impact,sans-serif';lines=wrap(c,text,maxW);if(fs<=24||lines.every(function(l){return c.measureText(l).width<=maxW}))break;fs-=2}
-  c.fillStyle='#3a2a08';c.textAlign='center';c.textBaseline='middle';
-  var lh=fs*1.2,y0=cy-(lines.length-1)*lh/2;
+  c.font=fs+'px "Archivo Black",Impact,sans-serif';c.fillStyle='#3a2a08';c.textAlign='center';c.textBaseline='middle';
+  var y0=cy-(lines.length-1)*lh/2;
   lines.forEach(function(l,n){c.fillText(l,cx,y0+n*lh)});
   c.strokeStyle='rgba(255,210,100,.22)';c.lineWidth=2;c.strokeRect(30,30,W-60,H-60);
   img.src=cv.toDataURL('image/png');
