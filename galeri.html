@@ -195,6 +195,8 @@ var flt=$('#flt');
 flt.innerHTML=FILT.map(function(f){return '<button data-f="'+esc(f[0])+'" aria-pressed="'+(f[0]===fil)+'">'+esc(f[1])+'</button>'}).join('');
 flt.addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;fil=b.dataset.f;[].forEach.call(flt.children,function(x){x.setAttribute('aria-pressed',x===b)});renderGrid()});
 renderGrid();
+// Foto preview yang filenya tidak ditemukan otomatis disembunyikan (tidak tampil sebagai gambar rusak)
+ART.forEach(function(a){(a.photos||[]).slice().forEach(function(src){var im=new Image();im.onerror=function(){a.photos=a.photos.filter(function(x){return x!==src});renderGrid()};im.src=src})});
 grid.addEventListener('click',function(e){
   var t=e.target.closest('[data-i]');if(t){last=t;openLB(+t.dataset.i);return}
   var b=e.target.closest('[data-b]');if(b&&!b.disabled)addCart(+b.dataset.b,0);
